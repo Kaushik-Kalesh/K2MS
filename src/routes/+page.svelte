@@ -54,13 +54,6 @@
     }
 </script>
 
-<svelte:head>
-    <title
-        >{content.metaTitle ||
-            "K2MS — Custom Software & Digital Marketing"}</title
-    >
-    <meta name="description" content={content.metaDescription || ""} />
-</svelte:head>
 
 <!-- NAV -->
 <nav class="nav">

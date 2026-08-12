@@ -39,27 +39,33 @@
               ),
     );
 
-    async function uploadImage(e, callback) {
-        const file = e.target.files[0];
-        if (!file) return;
+    async function uploadImages(e, callback) {
+        const files = Array.from(e.target.files);
+        if (files.length === 0) return;
 
         status = "Uploading...";
-        const formData = new FormData();
-        formData.append("image", file);
+        let uploaded = [];
 
-        try {
-            const res = await fetch("/api/upload-image", {
-                method: "POST",
-                body: formData,
-            });
-            const data = await res.json();
-            if (res.ok) {
-                callback(data.filename);
-                status = "Uploaded successfully";
-            } else {
-                status = "Error: " + data.error;
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append("image", file);
+            try {
+                const res = await fetch("/api/upload-image", {
+                    method: "POST",
+                    body: formData,
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    uploaded.push(data.filename);
+                }
+            } catch (err) {
+                console.error(err);
             }
-        } catch (err) {
+        }
+        if (uploaded.length > 0) {
+            callback(uploaded);
+            status = "Uploaded successfully";
+        } else {
             status = "Upload failed";
         }
         setTimeout(() => (status = ""), 3000);
@@ -156,6 +162,22 @@
                                             alt="preview"
                                             class="img-thumb"
                                         />
+                                        <div class="img-actions">
+                                            {#if imgIdx > 0}
+                                                <button type="button" class="move-btn" onclick={() => {
+                                                    const temp = proj.images[imgIdx - 1];
+                                                    proj.images[imgIdx - 1] = proj.images[imgIdx];
+                                                    proj.images[imgIdx] = temp;
+                                                }}>←</button>
+                                            {/if}
+                                            {#if imgIdx < proj.images.length - 1}
+                                                <button type="button" class="move-btn" onclick={() => {
+                                                    const temp = proj.images[imgIdx + 1];
+                                                    proj.images[imgIdx + 1] = proj.images[imgIdx];
+                                                    proj.images[imgIdx] = temp;
+                                                }}>→</button>
+                                            {/if}
+                                        </div>
                                         <button
                                             type="button"
                                             class="del-btn"
@@ -168,16 +190,17 @@
                                 <label class="file-upload-btn">
                                     <input
                                         type="file"
+                                        multiple
                                         accept="image/*"
                                         onchange={(e) =>
-                                            uploadImage(e, (name) => {
+                                            uploadImages(e, (names) => {
                                                 proj.images = [
                                                     ...(proj.images || []),
-                                                    name,
+                                                    ...names,
                                                 ];
                                             })}
                                     />
-                                    <span>+ Add Image</span>
+                                    <span>+ Add Image(s)</span>
                                 </label>
                             </div>
                         </div>
@@ -200,15 +223,15 @@
                                     </div>
                                 {:else}
                                     <label class="file-upload-btn">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onchange={(e) =>
-                                                uploadImage(e, (name) => {
-                                                    proj.logo = name;
-                                                })}
-                                        />
-                                        <span>+ Add Logo</span>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onchange={(e) =>
+                                            uploadImages(e, (names) => {
+                                                proj.logo = names[0];
+                                            })}
+                                    />
+                                    <span>+ Add Logo</span>
                                     </label>
                                 {/if}
                             </div>
@@ -444,6 +467,27 @@
     }
     .img-badge .del-btn:hover {
         background: #ef4444;
+    }
+    .img-actions {
+        display: flex;
+        background: rgba(0,0,0,0.6);
+        border-radius: 4px;
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        overflow: hidden;
+    }
+    .move-btn {
+        background: transparent;
+        border: none;
+        color: #fff;
+        cursor: pointer;
+        padding: 2px 6px;
+        font-size: 0.7rem;
+    }
+    .move-btn:hover {
+        background: rgba(255,255,255,0.2);
     }
     .file-upload-btn {
         display: inline-flex;
