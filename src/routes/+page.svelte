@@ -580,6 +580,7 @@
     .btn-primary {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 0.4rem;
         padding: 0.75rem 1.75rem;
         background: #f0ede8;
@@ -1181,7 +1182,6 @@
             column-gap: 0;
         }
         .p-card {
-            min-height: 280px;
             margin-bottom: 2rem;
         }
     }

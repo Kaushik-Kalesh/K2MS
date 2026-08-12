@@ -4,7 +4,7 @@ import { env } from '$env/dynamic/private';
 export const POST = async ({ request }) => {
     try {
         const data = await request.json();
-        const { email, reason, remarks } = data;
+        const { name, email, reason, message } = data;
 
         const resendApiKey = env.RESEND_API_KEY;
         const toEmail = env.GMAIL_USER || 'kaushikkalesh@gmail.com';
@@ -14,10 +14,10 @@ export const POST = async ({ request }) => {
         }
 
         const htmlBody = `
-        <p><strong>From:</strong> ${email}</p>
+        <p><strong>From:</strong> ${name} (${email})</p>
         <p><strong>Reason:</strong> ${reason}</p>
-        <p><strong>Remarks:</strong></p>
-        <p style="white-space: pre-wrap;">${remarks}</p>
+        <p><strong>Message:</strong></p>
+        <p style="white-space: pre-wrap;">${message}</p>
         `;
 
         const payload = {
