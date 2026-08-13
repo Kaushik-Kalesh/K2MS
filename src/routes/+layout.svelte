@@ -31,8 +31,6 @@
   
   <link rel="canonical" href={$page.url.href} />
   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  <script type="application/ld+json">
-    {@html JSON.stringify(schema)}
-  </script>
+  {@html `<script type="application/ld+json">${JSON.stringify(schema)}</script>`}
 </svelte:head>
 {@render children()}
