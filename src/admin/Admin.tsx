@@ -21,19 +21,20 @@ export default function Admin() {
   const [authenticated, setAuthenticated] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${process.env.R2_PUBLIC_URL}/content.json`).then(res => res.json()),
-      fetch(`${process.env.R2_PUBLIC_URL}/portfolio.json`).then(res => res.json())
-    ])
-    .then(([contentData, portfolioData]) => {
-      setContent(contentData || {});
-      setPortfolio(portfolioData || []);
-      setLoaded(true);
-    })
-    .catch(err => {
-      console.error(err);
-      setStatus("ERROR LOADING DATA");
-    });
+    fetch('/api/data')
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch API");
+        return res.json();
+      })
+      .then(data => {
+        setContent(data.content || {});
+        setPortfolio(data.portfolio || []);
+        setLoaded(true);
+      })
+      .catch(err => {
+        console.error(err);
+        setStatus("ERROR LOADING DATA");
+      });
   }, []);
 
   const save = async () => {

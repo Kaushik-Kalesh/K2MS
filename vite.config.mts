@@ -13,13 +13,8 @@ function figmaDataApi(): Plugin {
         const url = req.url?.split('?')[0];
         if (url === '/api/data' && req.method === 'GET') {
           try {
-            const content = fsSync.readFileSync(path.resolve(__dirname, 'data/content.json'), 'utf-8');
-            const portfolio = fsSync.readFileSync(path.resolve(__dirname, 'data/portfolio.json'), 'utf-8');
-            res.setHeader('Content-Type', 'application/json');
-            res.end(JSON.stringify({
-              content: JSON.parse(content),
-              portfolio: JSON.parse(portfolio)
-            }));
+            const handler = require('./api/data.js');
+            await handler(req, res);
           } catch (e: any) {
             res.statusCode = 500;
             res.end(JSON.stringify({ error: e.message }));
@@ -42,15 +37,6 @@ function figmaDataApi(): Plugin {
                res.statusCode = 500;
                res.end(JSON.stringify({ error: 'Failed to run api/save-all.js' }));
              }
-          }
-        } else if (url === '/api/images' && req.method === 'GET') {
-          try {
-            const handler = require('./api/images.js');
-            await handler(req, res);
-          } catch (e) {
-             console.error(e);
-             res.statusCode = 500;
-             res.end(JSON.stringify({ error: 'Failed to run api/images.js' }));
           }
         } else if (url === '/api/upload-image' && req.method === 'POST') {
           try {
