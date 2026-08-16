@@ -4,6 +4,9 @@ import path from 'path'
 
 export default defineConfig({
   plugins: [sveltekit()],
+  ssr: {
+    noExternal: ['gsap']
+  },
   server: {
     fs: {
       allow: [

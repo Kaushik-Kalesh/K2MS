@@ -21,7 +21,7 @@ export const POST = async ({ request }) => {
         `;
 
         const payload = {
-            from: "K2MS CRM <onboarding@resend.dev>",
+            from: "K2M Services <crm@k2ms.in>",
             to: [toEmail],
             reply_to: email,
             subject: "New K2MS Contact Request",
