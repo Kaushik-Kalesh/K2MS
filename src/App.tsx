@@ -140,6 +140,28 @@ export default function App() {
   const [activeProject, setActiveProject] = useState(0);
   const [sent, setSent] = useState(false);
 
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(0);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd || !data?.portfolio) return;
+    const distance = touchStart - touchEnd;
+    if (distance > 50) {
+      setActiveProject((prev) => (prev + 1) % data.portfolio.length);
+    } else if (distance < -50) {
+      setActiveProject((prev) => (prev === 0 ? data.portfolio.length - 1 : prev - 1));
+    }
+  };
+
   useEffect(() => {
     fetch('/api/data')
       .then(res => res.json())
@@ -268,7 +290,13 @@ export default function App() {
       <section id="work" className="bg-[#171d37] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1344px]">
           <div data-reveal className="reveal mb-10 flex flex-wrap items-end justify-between gap-5"><div><p className="text-xs font-bold tracking-[0.16em] text-[#d7ff55]">PORTFOLIO</p><h2 className="mt-4 font-display text-5xl leading-none tracking-[-0.06em] sm:text-6xl">{content.portfolio_headline}</h2></div><p className="max-w-xs text-sm leading-relaxed text-white/60">{content.portfolio_subheadline}</p></div>
-          <div data-reveal className="reveal project-scroller grid items-start gap-4 lg:grid-cols-[1.55fr_.85fr]">
+          <div 
+            data-reveal 
+            className="reveal project-scroller grid items-start gap-4 lg:grid-cols-[1.55fr_.85fr]"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             {projects[activeProject] && <article data-cms-id={projects[activeProject].id} className="overflow-hidden rounded-[2rem] bg-[#22294b] p-5 sm:p-7">
               <div className={`relative h-[310px] overflow-hidden rounded-[1.25rem] bg-gradient-to-br ${activeProject % 3 === 0 ? "from-[#f2bf5a] via-[#e99638] to-[#c85c35]" : activeProject % 3 === 1 ? "from-[#b9dfca] via-[#78bca5] to-[#247a73]" : "from-[#aab4fc] via-[#6974dc] to-[#292b74]"} sm:h-[390px]`}>
                 {projects[activeProject].images && projects[activeProject].images.length > 0 ? (
