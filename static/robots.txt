@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://k2ms.vercel.app/sitemap.xml
+Sitemap: https://k2ms.in/sitemap.xml

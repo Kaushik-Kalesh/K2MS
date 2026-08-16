@@ -19,6 +19,7 @@ export default function Admin() {
   const [loaded, setLoaded] = useState(false);
   const [pin, setPin] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
+  const [loginError, setLoginError] = useState("");
 
   useEffect(() => {
     fetch('/api/data')
@@ -76,22 +77,38 @@ export default function Admin() {
     return (
       <div className="min-h-screen bg-[#0c0e16] flex items-center justify-center text-white p-6">
         <style>{`input[type="password"]::-ms-reveal, input[type="password"]::-ms-clear { display: none; }`}</style>
-        <form onSubmit={(e) => { e.preventDefault(); if (pin.trim()) setAuthenticated(true); }} className="flex flex-col gap-4 text-center">
+        <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-4 text-center">
            <h1 className="text-xs font-bold tracking-[.14em] text-[#d7ff55]">ADMIN CMS</h1>
            <input 
               type="password" 
               value={pin} 
-              onChange={e => {
+              onChange={async e => {
                  const val = e.target.value;
                  setPin(val);
+                 setLoginError("");
                  if (val.length === 4) {
-                    setAuthenticated(true);
+                    try {
+                      const res = await fetch('/api/verify-pin', {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${val}` }
+                      });
+                      if (res.ok) {
+                        setAuthenticated(true);
+                      } else {
+                        setPin("");
+                        setLoginError("INVALID PIN");
+                      }
+                    } catch (err) {
+                      setPin("");
+                      setLoginError("ERROR VERIFYING PIN");
+                    }
                  }
               }} 
               placeholder="ENTER PIN" 
               className="bg-transparent border-b border-white/20 text-center py-2 text-2xl outline-none tracking-widest focus:border-[#d7ff55]" 
               autoFocus 
            />
+           {loginError && <p className="text-xs font-bold tracking-widest text-red-500 mt-2">{loginError}</p>}
         </form>
       </div>
     );
@@ -111,7 +128,7 @@ export default function Admin() {
           <div className="flex items-center gap-6">
             <span className="text-xs font-bold tracking-[.14em] text-[#d7ff55]">{status}</span>
             <button onClick={save} className="group rounded-full bg-[#d7ff55] px-5 py-3 text-xs font-black tracking-[.12em] text-[#10121a] transition hover:bg-white">SAVE CHANGES</button>
-            <a href="/" className="rounded-full border border-white/20 px-4 py-3 text-xs font-bold tracking-[0.12em] transition hover:border-[#d7ff55] hover:bg-[#d7ff55] hover:text-[#0c0e16]">VIEW SITE ↗</a>
+            <a href="/" target="_blank" rel="noopener noreferrer" className="rounded-full border border-white/20 px-4 py-3 text-xs font-bold tracking-[0.12em] transition hover:border-[#d7ff55] hover:bg-[#d7ff55] hover:text-[#0c0e16]">VIEW SITE ↗</a>
           </div>
         </header>
 

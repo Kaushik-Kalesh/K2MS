@@ -38,6 +38,15 @@ function figmaDataApi(): Plugin {
                res.end(JSON.stringify({ error: 'Failed to run api/save-all.js' }));
              }
           }
+        } else if (url === '/api/verify-pin' && req.method === 'POST') {
+          try {
+            const handler = require('./api/verify-pin.js');
+            await handler(req, res);
+          } catch (e) {
+             console.error(e);
+             res.statusCode = 500;
+             res.end(JSON.stringify({ error: 'Failed to run api/verify-pin.js' }));
+          }
         } else if (url === '/api/upload-image' && req.method === 'POST') {
           try {
             const handler = require('./api/upload-image.js');
