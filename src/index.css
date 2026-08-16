@@ -35,3 +35,8 @@ body { margin: 0; }
 .brand-lockup:hover { transform: translateY(-1px); filter: brightness(1.12); }
 .brand-k2m { color: #d7ff55; text-shadow: 0 0 16px rgb(215 255 85 / .48), 0 0 36px rgb(215 255 85 / .16); }
 .brand-services { color: #f8f7f1; text-shadow: 0 0 20px rgb(255 255 255 / .15); }
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }

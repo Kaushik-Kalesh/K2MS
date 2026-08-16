@@ -10,7 +10,31 @@ function figmaDataApi(): Plugin {
     name: 'figma-data-api',
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
-        const url = req.url?.split('?')[0];
+        if (!res.status) {
+          res.status = (code: number) => {
+            res.statusCode = code;
+            return res;
+          };
+        }
+        if (!res.json) {
+          res.json = (data: any) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(data));
+          };
+        }
+
+        const url = req.url?.split('?')[0] || '';
+        
+        if (req.method === 'POST' && url.startsWith('/api/') && req.headers['content-type']?.includes('application/json')) {
+          await new Promise<void>((resolve) => {
+            let body = '';
+            req.on('data', chunk => { body += chunk.toString(); });
+            req.on('end', () => {
+              try { (req as any).body = JSON.parse(body); } catch (e) {}
+              resolve();
+            });
+          });
+        }
         if (url === '/api/data' && req.method === 'GET') {
           try {
             const handler = require('./api/data.js');

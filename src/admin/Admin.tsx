@@ -53,13 +53,13 @@ export default function Admin() {
     }
   };
 
-  const filteredContent = useMemo(() => {
+  const filteredKeys = useMemo(() => {
     if (search.trim() === "") return [];
-    return Object.entries(content).filter(([k, v]) => 
+    return Object.keys(content).filter(k => 
       k.toLowerCase().includes(search.toLowerCase()) || 
-      String(v).toLowerCase().includes(search.toLowerCase())
+      String(content[k]).toLowerCase().includes(search.toLowerCase())
     );
-  }, [content, search]);
+  }, [search]); // Intentionally not depending on 'content' so fields don't disappear while editing
 
   const updateContent = (key: string, value: string) => {
     setContent(prev => ({ ...prev, [key]: value }));
@@ -132,9 +132,9 @@ export default function Admin() {
           </div>
         </header>
 
-        <main className="grid gap-12 lg:grid-cols-[1fr_1.3fr]">
+        <main className="grid gap-12 lg:grid-cols-[1fr_1.3fr] items-start">
           
-          <section className="rounded-[2rem] bg-[#10121a] p-6 text-white sm:p-9 self-start sticky top-12">
+          <section className="rounded-[2rem] bg-[#10121a] p-6 text-white sm:p-9 lg:sticky lg:top-12 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto custom-scrollbar">
             <h2 className="text-xs font-bold tracking-[0.16em] text-[#59604f] mb-6">CONTENT DICTIONARY</h2>
             <input
               type="text"
@@ -150,13 +150,13 @@ export default function Admin() {
                   TYPE IN THE SEARCH BOX TO FIND & EDIT CONTENT KEYS
                 </div>
               )}
-              {filteredContent.map(([key, val]) => (
+              {filteredKeys.map(key => (
                 <div key={key}>
                   <label className="block text-[10px] font-bold tracking-[.14em] text-white/55 uppercase mb-2">{key}</label>
                   <textarea
-                    value={val}
+                    value={content[key] || ""}
                     onChange={e => updateContent(key, e.target.value)}
-                    rows={String(val).length > 80 ? 3 : 1}
+                    rows={String(content[key] || "").length > 80 ? 3 : 1}
                     className="w-full resize-none border-b border-white/25 bg-transparent py-3 text-base outline-none transition focus:border-[#d7ff55]"
                   />
                 </div>
@@ -164,7 +164,7 @@ export default function Admin() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] bg-[#10121a] p-6 text-white sm:p-9">
+          <section className="rounded-[2rem] bg-[#10121a] p-6 text-white sm:p-9 lg:sticky lg:top-12 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto custom-scrollbar">
             <h2 className="text-xs font-bold tracking-[0.16em] text-[#59604f] mb-8">PORTFOLIO PROJECTS</h2>
             
             <div className="flex flex-col gap-8">
