@@ -347,7 +347,6 @@
                 onclick={() => (showContactModal = false)}>✕</button
             >
             <h2 class="contact-heading">{content.contact_headline}</h2>
-            <p class="contact-subheading">Let's build something incredible together.</p>
             <form class="contact-form glass-form" onsubmit={handleSubmit}>
                 <div class="form-row">
                     <div class="form-group">
@@ -379,6 +378,7 @@
                 <SpecularButton
                     type="submit"
                     className="contact-submit-specular"
+                    radius={18}
                     baseColor="#F59E0B"
                     baseIntensity={1}
                     lineColor="#ffffff"
@@ -1131,7 +1131,9 @@
         -webkit-backdrop-filter: blur(40px) saturate(1.5);
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         box-shadow: 0 0 80px -20px rgba(245, 158, 11, 0.15) !important;
-        overflow: hidden;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        max-height: 90vh !important;
     }
     .contact-modal-glow {
         position: absolute;
@@ -1415,6 +1417,9 @@
         }
         .p-card {
             margin-bottom: 2rem;
+        }
+        .contact-modal {
+            padding: 2.5rem 1.5rem !important;
         }
     }
 </style>
