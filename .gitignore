@@ -6,19 +6,18 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# SvelteKit and Dependencies
+# Node and Build
 node_modules
 dist
 dist-ssr
 build/
-.svelte-kit/
+.vite/
 .vercel/
+
+# Environment Variables
 .env
 .env.*
 !.env.example
-
-# Local Data
-data/
 
 # Editor directories and files
 .vscode/*

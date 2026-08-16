@@ -1,16 +1,15 @@
-import { json } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+module.exports = async (req, res) => {
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
 
-export const POST = async ({ request }) => {
     try {
-        const data = await request.json();
-        const { name, email, reason, message } = data;
-
-        const resendApiKey = env.RESEND_API_KEY;
-        const toEmail = env.GMAIL_USER || 'kaushikkalesh@gmail.com';
+        const { name, email, reason, message } = req.body;
+        const resendApiKey = process.env.RESEND_API_KEY;
+        const toEmail = process.env.GMAIL_USER || 'kaushikkalesh@gmail.com';
 
         if (!resendApiKey) {
-            return json({ error: 'RESEND_API_KEY missing on server.' }, { status: 500 });
+            return res.status(500).json({ error: 'RESEND_API_KEY missing on server.' });
         }
 
         const htmlBody = `
@@ -28,7 +27,7 @@ export const POST = async ({ request }) => {
             html: htmlBody
         };
 
-        const res = await fetch("https://api.resend.com/emails", {
+        const response = await fetch("https://api.resend.com/emails", {
             method: 'POST',
             headers: {
                 "Authorization": `Bearer ${resendApiKey}`,
@@ -37,14 +36,14 @@ export const POST = async ({ request }) => {
             body: JSON.stringify(payload)
         });
 
-        if (res.ok) {
-            return json({ success: true });
+        if (response.ok) {
+            return res.status(200).json({ success: true });
         } else {
-            const errText = await res.text();
+            const errText = await response.text();
             throw new Error(`Resend API Error: ${errText}`);
         }
     } catch (e) {
         console.error('Error sending email:', e);
-        return json({ error: e.message }, { status: 500 });
+        return res.status(500).json({ error: e.message });
     }
 };

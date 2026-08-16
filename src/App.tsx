@@ -1,0 +1,309 @@
+import { FormEvent, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import StrokeText from "@/components/StrokeText";
+
+type PortfolioProject = {
+  id: string;
+  category: string;
+  client: string;
+  description: string;
+  images: string[];
+  logo: string;
+  name: string;
+  tags: string[];
+};
+
+function Arrow({ diagonal = false }: { diagonal?: boolean }) {
+  return <span className={`inline-block text-xl leading-none transition-transform duration-300 ${diagonal ? "group-hover:-translate-y-1 group-hover:translate-x-1" : "group-hover:translate-x-1"}`}>→</span>;
+}
+
+function ProjectArtwork({ type }: { type: number }) {
+  if (type % 3 === 0) {
+    return <div className="relative h-full overflow-hidden"><div className="absolute -left-7 top-9 h-44 w-44 rounded-full border-[18px] border-white/80" /><div className="absolute bottom-[-45px] right-[-22px] h-52 w-52 rounded-full bg-[#1d1733]" /><div className="absolute bottom-14 left-12 h-16 w-24 rounded-full border-2 border-white/70" /><div className="absolute right-12 top-12 font-display text-6xl italic text-[#1d1733]">A</div></div>;
+  }
+  if (type % 3 === 1) {
+    return <div className="relative h-full overflow-hidden"><div className="absolute -right-3 top-5 h-48 w-48 rounded-full border-[22px] border-white/70" /><div className="absolute bottom-[-48px] left-[-25px] h-48 w-48 rounded-full bg-[#164d4c]" /><div className="absolute bottom-12 right-12 h-12 w-20 rounded-full border-2 border-white/70" /><div className="absolute left-12 top-10 text-5xl font-light text-[#164d4c]">N°</div></div>;
+  }
+  return <div className="relative h-full overflow-hidden"><div className="absolute -top-14 left-10 h-64 w-64 rotate-45 rounded-[40px] border-[18px] border-white/70" /><div className="absolute bottom-[-60px] right-[-20px] h-52 w-52 rounded-full bg-[#19194a]" /><div className="absolute left-10 top-11 text-5xl font-display text-[#19194a]">Lumen</div></div>;
+}
+
+function ProjectCarousel({ images, name }: { images: string[]; name: string }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [images]);
+
+  if (!images || images.length === 0) return null;
+
+  const handlePrev = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    setCurrentIndex((prev) => (prev + 1) % images.length);
+  };
+
+  return (
+    <>
+      <div className="relative h-full w-full group cursor-pointer" onClick={() => setIsPreviewOpen(true)}>
+        <img key={images[currentIndex]} src={`${process.env.R2_PUBLIC_URL}/images/${images[currentIndex]}`} alt={name} className="h-full w-full object-cover animate-[fadeIn_0.3s_ease-out]" />
+        
+        {images.length > 1 && (
+          <>
+            <button 
+              onClick={handlePrev}
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-100 transition hover:bg-black/80 backdrop-blur md:opacity-0 group-hover:opacity-100"
+              aria-label="Previous image"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button 
+              onClick={handleNext}
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-100 transition hover:bg-black/80 backdrop-blur md:opacity-0 group-hover:opacity-100"
+              aria-label="Next image"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+
+            <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2">
+              {images.map((_, i) => (
+                <button 
+                  key={i} 
+                  onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); }}
+                  className={`h-1.5 w-1.5 rounded-full transition-all ${i === currentIndex ? 'bg-white scale-125' : 'bg-white/40'}`}
+                  aria-label={`Go to image ${i + 1}`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      {isPreviewOpen && createPortal(
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm p-2 sm:p-16"
+          onClick={() => setIsPreviewOpen(false)}
+        >
+          <button 
+            className="absolute top-4 right-4 sm:top-8 sm:right-8 text-white/50 hover:text-white transition p-2 z-10"
+            onClick={() => setIsPreviewOpen(false)}
+          >
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+
+          <img 
+            src={`${process.env.R2_PUBLIC_URL}/images/${images[currentIndex]}`} 
+            alt={name} 
+            className="max-h-[85vh] w-full object-contain shadow-2xl drop-shadow-2xl" 
+            onClick={(e) => e.stopPropagation()} 
+          />
+
+          {images.length > 1 && (
+            <>
+              <button 
+                onClick={handlePrev}
+                className="absolute left-2 sm:left-8 top-1/2 -translate-y-1/2 rounded-full bg-black/40 sm:bg-white/10 p-3 sm:p-4 text-white transition hover:bg-white/20 hover:scale-110 z-10"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+              </button>
+              <button 
+                onClick={handleNext}
+                className="absolute right-2 sm:right-8 top-1/2 -translate-y-1/2 rounded-full bg-black/40 sm:bg-white/10 p-3 sm:p-4 text-white transition hover:bg-white/20 hover:scale-110 z-10"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+              
+              <div className="absolute bottom-6 sm:bottom-10 left-0 right-0 flex justify-center gap-3 z-10">
+                {images.map((_, i) => (
+                  <button 
+                    key={i} 
+                    onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); }}
+                    className={`h-2 w-2 rounded-full transition-all ${i === currentIndex ? 'bg-[#d7ff55] scale-150' : 'bg-white/30 hover:bg-white/60'}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>,
+        document.body
+      )}
+    </>
+  );
+}
+
+export default function App() {
+  const [data, setData] = useState<{content: any, portfolio: PortfolioProject[]} | null>(null);
+  const [activeProject, setActiveProject] = useState(0);
+  const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/data')
+      .then(res => res.json())
+      .then(d => setData(d))
+      .catch(e => console.error(e));
+  }, []);
+
+  useEffect(() => {
+    if (!data) return;
+    document.title = data.content.metaTitle || "K2M Services";
+    document.querySelector('meta[name="description"]')?.setAttribute("content", data.content.metaDescription || "");
+
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      revealItems.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, [data]);
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSent(true);
+  };
+
+  if (!data) {
+    return <div className="min-h-screen bg-[#0c0e16] flex items-center justify-center text-white">Loading...</div>;
+  }
+
+  const { content, portfolio: projects } = data;
+
+  const heroHeadline = content.hero_headline || '';
+  const heroTextDesktop = heroHeadline.includes('?') ? heroHeadline.replace('? ', '?\n') : heroHeadline;
+  const heroTextMobile = heroTextDesktop.replace(' the ', ' the\n');
+
+  const services = [
+    { index: "01", title: content.service_software_title, text: content.service_software_desc, tags: ["CRM", "ERP", "AI"] },
+    { index: "02", title: content.service_marketing_title, text: content.service_marketing_desc, tags: ["SEO", "Content", "Growth"] },
+    { index: "03", title: content.service_infra_title, text: content.service_infra_desc, tags: ["Cloud", "DNS", "Servers"] },
+    { index: "04", title: content.service_both_title, text: content.service_both_desc, tags: ["Product", "Demand", "End-to-end"] },
+  ];
+
+  return (
+    <main className="min-h-screen overflow-x-hidden bg-[#0c0e16] text-[#f8f7f1] selection:bg-[#d7ff55] selection:text-[#0c0e16]">
+      <header className="absolute inset-x-0 top-0 z-20 mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
+        <a href="#top" className="brand-lockup text-base font-extrabold tracking-[-0.05em]" aria-label="K2M Services home">
+          <span className="brand-k2m">K2M</span><span className="brand-services"> Services</span>
+        </a>
+        <nav className="hidden items-center gap-8 text-xs font-medium tracking-[0.16em] text-white/65 md:flex">
+          <a className="transition hover:text-[#d7ff55]" href="#services">SERVICES</a>
+          <a className="transition hover:text-[#d7ff55]" href="#work">PORTFOLIO</a>
+          <a className="transition hover:text-[#d7ff55]" href="#contact">CONTACT</a>
+        </nav>
+        <a href="#contact" className="rounded-full border border-white/20 px-4 py-2 text-xs font-bold tracking-[0.12em] transition hover:border-[#d7ff55] hover:bg-[#d7ff55] hover:text-[#0c0e16]">LET'S TALK</a>
+      </header>
+
+      <section id="top" className="relative isolate min-h-[720px] overflow-hidden px-5 pb-8 pt-32 sm:px-8 lg:min-h-[790px] lg:px-12">
+        <div className="hero-orb hero-orb-one" /><div className="hero-orb hero-orb-two" />
+        <div className="absolute inset-0 opacity-[0.14] [background-image:linear-gradient(rgba(255,255,255,.22)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.22)_1px,transparent_1px)] [background-size:72px_72px]" />
+        <div className="relative mx-auto flex min-h-[580px] max-w-[1344px] flex-col justify-end">
+          <div className="mb-4 lg:mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.22em] text-[#d7ff55] sm:text-xs"><span className="h-px w-9 bg-[#d7ff55]" />STRATEGY · DESIGN · TECHNOLOGY</div>
+          <div className="grid items-end gap-2 lg:grid-cols-[1fr_300px] lg:gap-8">
+            <h1 className="max-w-5xl font-display text-[clamp(4.25rem,10.4vw,10.4rem)] font-semibold leading-[0.78] tracking-[-0.08em] -mt-2 lg:-mt-4">
+              <span className="hidden sm:block">
+                <StrokeText
+                  text={heroTextDesktop}
+                  strokeColor="#d7ff55"
+                  fillColor="#f8f7f1"
+                  strokeWidth={1.4}
+                  trigger="mount"
+                  fillMode="wipe"
+                />
+              </span>
+              <span className="block sm:hidden">
+                <StrokeText
+                  text={heroTextMobile}
+                  strokeColor="#d7ff55"
+                  fillColor="#f8f7f1"
+                  strokeWidth={1.4}
+                  trigger="mount"
+                  fillMode="wipe"
+                />
+              </span>
+            </h1>
+            <p className="max-w-xs pb-2 text-base leading-relaxed text-white/68">{content.hero_subheadline}</p>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-5 border-t border-white/15 pt-5 text-[10px] font-semibold tracking-[0.14em] text-white/50 sm:text-xs">
+            <span>BASED WHEREVER THE WORK IS</span><span className="hidden sm:block">SCROLL TO EXPLORE ↓</span>
+            <a href="#work" className="group flex items-center gap-2 text-white transition hover:text-[#d7ff55]">EXPLORE THE WORK <Arrow /></a>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" className="relative bg-[#f6f3eb] px-5 py-20 text-[#10121a] sm:px-8 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-[1344px]">
+          <div data-reveal className="reveal mb-14 grid gap-6 lg:grid-cols-[.7fr_1.3fr] lg:items-end">
+            <p className="text-xs font-bold tracking-[0.16em] text-[#59604f]">OUR SERVICES</p>
+            <h2 className="max-w-3xl font-display text-5xl leading-[.9] tracking-[-0.06em] sm:text-6xl">{content.services_headline}<br /><em className="font-normal text-[#4e724d]">{content.services_subheadline}</em></h2>
+          </div>
+          <div className="grid gap-px bg-[#10121a]/15 md:grid-cols-2 xl:grid-cols-4">
+            {services.map((service) => <article key={service.index} data-reveal className="reveal group flex min-h-[320px] flex-col bg-[#f6f3eb] p-6 transition duration-500 hover:bg-[#d7ff55] sm:p-8" style={{ transitionDelay: `${Number(service.index) * 80}ms` }}>
+              <span className="font-mono text-xs text-[#4e724d]">{service.index}</span>
+              <div className="mt-12"><h3 className="text-2xl font-semibold tracking-[-0.04em]">{service.title}</h3><p className="mt-3 max-w-xs text-sm leading-relaxed text-[#4c504d]">{service.text}</p></div>
+              <div className="mt-auto flex flex-wrap gap-2 pt-8">{service.tags.map(tag => <span key={tag} className="rounded-full border border-[#10121a]/15 px-2.5 py-1 text-[10px] font-bold tracking-wide">{tag}</span>)}</div>
+            </article>)}
+          </div>
+        </div>
+      </section>
+
+      <section id="work" className="bg-[#171d37] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-[1344px]">
+          <div data-reveal className="reveal mb-10 flex flex-wrap items-end justify-between gap-5"><div><p className="text-xs font-bold tracking-[0.16em] text-[#d7ff55]">PORTFOLIO</p><h2 className="mt-4 font-display text-5xl leading-none tracking-[-0.06em] sm:text-6xl">{content.portfolio_headline}</h2></div><p className="max-w-xs text-sm leading-relaxed text-white/60">{content.portfolio_subheadline}</p></div>
+          <div data-reveal className="reveal project-scroller grid items-start gap-4 lg:grid-cols-[1.55fr_.85fr]">
+            {projects[activeProject] && <article data-cms-id={projects[activeProject].id} className="overflow-hidden rounded-[2rem] bg-[#22294b] p-5 sm:p-7">
+              <div className={`relative h-[310px] overflow-hidden rounded-[1.25rem] bg-gradient-to-br ${activeProject % 3 === 0 ? "from-[#f2bf5a] via-[#e99638] to-[#c85c35]" : activeProject % 3 === 1 ? "from-[#b9dfca] via-[#78bca5] to-[#247a73]" : "from-[#aab4fc] via-[#6974dc] to-[#292b74]"} sm:h-[390px]`}>
+                {projects[activeProject].images && projects[activeProject].images.length > 0 ? (
+                  <ProjectCarousel images={projects[activeProject].images} name={projects[activeProject].name} />
+                ) : (
+                  <ProjectArtwork type={activeProject} />
+                )}
+                <span className="absolute bottom-5 left-5 rounded-full bg-white/85 px-3 py-1 text-[10px] font-bold tracking-wider text-[#10121a] backdrop-blur">{projects[activeProject].category.toUpperCase()}</span>
+              </div>
+              <div className="grid gap-5 py-6 sm:grid-cols-[1fr_auto] sm:items-end"><div><div className="mb-3 flex items-center gap-2 text-xs font-bold tracking-[.14em] text-[#d7ff55]">
+                {projects[activeProject].logo ? (
+                  <img src={`${process.env.R2_PUBLIC_URL}/images/${projects[activeProject].logo}`} alt={`${projects[activeProject].client} logo`} className="h-7 w-7 rounded-full object-contain bg-white/10 p-1" />
+                ) : (
+                  <span className="grid h-7 w-7 place-items-center rounded-full bg-white/10 text-[9px] text-white">{projects[activeProject].client.slice(0, 2).toUpperCase()}</span>
+                )}
+                {projects[activeProject].client.toUpperCase()}</div><h3 className="max-w-xl font-display text-3xl tracking-[-.045em] sm:text-4xl">{projects[activeProject].name}</h3></div><button onClick={() => setActiveProject((activeProject + 1) % projects.length)} className="group inline-flex h-11 items-center gap-3 self-end rounded-full border border-white/20 px-4 text-xs font-bold tracking-[.12em] transition hover:border-[#d7ff55] hover:text-[#d7ff55]">NEXT CASE <Arrow /></button></div>
+            </article>}
+            {projects[activeProject] && <aside className="flex flex-col justify-between gap-4 rounded-[2rem] bg-[#d7ff55] p-6 text-[#121612] sm:p-8"><div><span className="font-mono text-xs">{String(activeProject + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span><p className="mt-14 max-w-sm whitespace-pre-line text-xl leading-snug tracking-[-.03em]">{projects[activeProject].description}</p></div><div className="flex gap-2">{projects.map((project, index) => <button key={project.id} data-cms-id={project.id} onClick={() => setActiveProject(index)} aria-label={`View ${project.client} case study`} className={`h-2 flex-1 rounded-full transition ${activeProject === index ? "bg-[#121612]" : "bg-[#121612]/20 hover:bg-[#121612]/50"}`} />)}</div><p className="text-xs font-bold tracking-[.12em]">SWIPE THROUGH OUR IMPACT →</p></aside>}
+          </div>
+        </div>
+      </section>
+
+      <section data-reveal className="reveal relative overflow-hidden bg-[#ee6d4f] py-16 text-[#20131e]">
+        <div className="marquee-track font-display text-[clamp(3.4rem,8vw,8.5rem)] leading-none tracking-[-.07em]">
+          <span>{content.marquee_text}&nbsp;</span><span aria-hidden="true">{content.marquee_text}&nbsp;</span>
+        </div>
+      </section>
+
+      <section id="contact" className="bg-[#f6f3eb] px-5 py-20 text-[#10121a] sm:px-8 lg:px-12 lg:py-28">
+        <div data-reveal className="reveal mx-auto grid max-w-[1344px] gap-12 lg:grid-cols-[.9fr_1.1fr]"><div><p className="text-xs font-bold tracking-[.16em] text-[#59604f]">START A CONVERSATION</p><h2 className="mt-5 max-w-lg font-display text-5xl leading-[.9] tracking-[-.065em] sm:text-7xl">{content.contact_headline}</h2><p className="mt-8 max-w-sm text-base leading-relaxed text-[#4c504d]">{content.contact_subheadline}</p><img src={content.logoUrl} className="mx-auto mt-8 block w-44 max-w-full object-contain mix-blend-multiply" alt="K2M Services logo" /></div>
+          <form onSubmit={handleSubmit} className="rounded-[2rem] bg-[#10121a] p-6 text-white sm:p-9"><div className="grid gap-6 sm:grid-cols-2"><label className="block text-xs font-bold tracking-[.14em] text-white/55">YOUR NAME<input required name="name" className="mt-3 w-full border-b border-white/25 bg-transparent py-3 text-base outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]" placeholder="Your name" /></label><label className="block text-xs font-bold tracking-[.14em] text-white/55">EMAIL ADDRESS<input required type="email" name="email" className="mt-3 w-full border-b border-white/25 bg-transparent py-3 text-base outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]" placeholder="Your email" /></label></div><label className="mt-7 block text-xs font-bold tracking-[.14em] text-white/55">HOW CAN WE HELP?<textarea required name="message" rows={4} className="mt-3 w-full resize-none border-b border-white/25 bg-transparent py-3 text-base outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]" placeholder="A little context goes a long way..." /></label><div className="mt-8 flex flex-wrap items-center justify-between gap-4"><p className="text-xs text-white/45">Typically reply within 1 business day.</p><button className="group rounded-full bg-[#d7ff55] px-5 py-3 text-xs font-black tracking-[.12em] text-[#10121a] transition hover:bg-white">{sent ? "MESSAGE RECEIVED ✓" : <span className="flex items-center gap-3">SEND THE NOTE <Arrow diagonal /></span>}</button></div></form>
+        </div>
+      </section>
+
+      <footer className="bg-[#10121a] px-5 py-7 sm:px-8 lg:px-12"><div className="mx-auto flex max-w-[1344px] flex-wrap items-center justify-between gap-4 text-[10px] font-bold tracking-[.14em] text-white/45"><span>{content.footer_copyright}</span><a className="transition hover:text-[#d7ff55]" href="mailto:hello@k2mservices.com">{content.footer_tagline.toUpperCase()}</a></div></footer>
+    </main>
+  );
+}
