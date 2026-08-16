@@ -202,7 +202,14 @@
         <span class="ag-panel__label" aria-hidden="true">
           <span class="ag-panel__bar" bind:this={barRefs[i]}></span>
           <span class="ag-panel__text" bind:this={textRefs[i]}>
-            {item.label}
+            <span class="ag-panel__title">{item.label}</span>
+            {#if item.tags && item.tags.length > 0}
+              <span class="ag-panel__tags">
+                {#each item.tags as tag}
+                  <span class="ag-tag">{tag}</span>
+                {/each}
+              </span>
+            {/if}
           </span>
         </span>
       {/if}
@@ -306,7 +313,7 @@
     bottom: 20px;
     right: 20px;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 12px;
     pointer-events: none;
     z-index: 2;
@@ -320,10 +327,20 @@
     background: var(--ag-accent);
     opacity: 0;
     box-shadow: 0 0 12px color-mix(in srgb, var(--ag-accent) 60%, transparent);
+    margin-top: 4px;
   }
 
   .ag-panel__text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     color: var(--ag-text);
+    overflow: hidden;
+    opacity: 0;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  }
+  
+  .ag-panel__title {
     font-family: inherit;
     font-weight: 600;
     font-size: clamp(1rem, 1.4vw, 1.4rem);
@@ -331,8 +348,24 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    opacity: 0;
-    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  }
+
+  .ag-panel__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .ag-tag {
+    font-size: 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 12px;
+    white-space: nowrap;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
 
   @media (max-width: 520px) {

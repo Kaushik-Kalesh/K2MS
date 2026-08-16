@@ -59,7 +59,6 @@
         if (!selectedProject || !selectedProject.images) return;
         currentImageIndex = (currentImageIndex - 1 + selectedProject.images.length) % selectedProject.images.length;
     }
-
     $effect(() => {
         let timer;
         if (selectedProject && selectedProject.images && selectedProject.images.length > 1) {
@@ -300,7 +299,8 @@
                 items={portfolioData.map(p => ({
                     image: (p.images && p.images.length > 0) ? `/api/images/${p.images[0]}` : 'https://r2.k2ms.in/images/content_ph.jpg',
                     label: p.name,
-                    alt: p.client || p.name
+                    alt: p.client || p.name,
+                    tags: p.tags || []
                 }))}
                 onItemClick={openProjectModal}
             />
@@ -1162,7 +1162,7 @@
         z-index: 0;
     }
     .contact-heading {
-        margin-bottom: 0.5rem;
+        margin-bottom: 2rem;
         font-size: 2rem;
         text-align: center;
         background: linear-gradient(135deg, #fff, rgba(255,255,255,0.6));
@@ -1412,6 +1412,7 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            padding-bottom: 4rem; /* Reduced to fix empty space issue, but enough for the last card to stick briefly */
         }
         .services-grid .svc-card {
             position: sticky;
@@ -1419,7 +1420,7 @@
             -webkit-backdrop-filter: blur(24px);
             background: rgba(20, 20, 20, 0.85);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 2rem;
+            margin-bottom: 0.5rem;
             box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5);
         }
         .services-grid .svc-card:nth-child(1) { top: 100px; z-index: 1; }
