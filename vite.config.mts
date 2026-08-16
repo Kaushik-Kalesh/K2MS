@@ -25,30 +25,24 @@ function figmaDataApi(): Plugin {
             res.end(JSON.stringify({ error: e.message }));
           }
         } else if (url === '/api/save-all' && req.method === 'POST') {
-          const auth = req.headers.authorization;
-          if (!auth || auth !== `Bearer ${process.env.ADMIN_PIN}`) {
-            res.statusCode = 401;
-            res.end(JSON.stringify({ error: 'UNAUTHORIZED' }));
-            return;
-          }
-          let body = '';
-          req.on('data', chunk => { body += chunk.toString() });
-          req.on('end', async () => {
-            try {
-              const { content, portfolio } = JSON.parse(body);
-              if (content) {
-                fsSync.writeFileSync(path.resolve(__dirname, 'data/content.json'), JSON.stringify(content, null, 2));
-              }
-              if (portfolio) {
-                fsSync.writeFileSync(path.resolve(__dirname, 'data/portfolio.json'), JSON.stringify(portfolio, null, 2));
-              }
-              res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ success: true }));
-            } catch (e: any) {
-              res.statusCode = 500;
-              res.end(JSON.stringify({ error: e.message }));
+          try {
+            // First run the Vercel handler to save to R2
+            const handler = require('./api/save-all.js');
+            await handler(req, res);
+            
+            // If it succeeds, also sync to local data/ for instant HMR in dev
+            if (res.statusCode === 200 && req.body) {
+              const { content, portfolio } = req.body;
+              if (content) fsSync.writeFileSync(path.resolve(__dirname, 'data/content.json'), JSON.stringify(content, null, 2));
+              if (portfolio) fsSync.writeFileSync(path.resolve(__dirname, 'data/portfolio.json'), JSON.stringify(portfolio, null, 2));
             }
-          });
+          } catch (e) {
+             console.error(e);
+             if (!res.headersSent) {
+               res.statusCode = 500;
+               res.end(JSON.stringify({ error: 'Failed to run api/save-all.js' }));
+             }
+          }
         } else if (url === '/api/images' && req.method === 'GET') {
           try {
             const handler = require('./api/images.js');

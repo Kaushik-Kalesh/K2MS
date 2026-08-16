@@ -3,8 +3,8 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
+    "dev": "node scripts/fetch-data.js && vite --host 0.0.0.0",
+    "build": "node scripts/fetch-data.js && vite build",
     "preview": "vite preview",
     "format": "oxfmt"
   },
