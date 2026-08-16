@@ -60,6 +60,20 @@
         currentImageIndex = (currentImageIndex - 1 + selectedProject.images.length) % selectedProject.images.length;
     }
 
+    $effect(() => {
+        let timer;
+        if (selectedProject && selectedProject.images && selectedProject.images.length > 1) {
+            // Depend on currentImageIndex to reset the timer on manual navigation
+            const _ = currentImageIndex; 
+            timer = setTimeout(() => {
+                nextImage();
+            }, 3000);
+        }
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
+    });
+
     function reveal(node) {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -853,8 +867,9 @@
     }
     .modal-carousel img {
         width: 100%;
-        max-height: 500px;
+        aspect-ratio: 16/9;
         object-fit: contain;
+        background: #050505;
         display: block;
     }
     .carousel-controls {
