@@ -50,31 +50,39 @@ function ProjectCarousel({ images, name }: { images: string[]; name: string }) {
   return (
     <>
       <div className="relative h-full w-full group cursor-pointer" onClick={() => setIsPreviewOpen(true)}>
-        <img key={images[currentIndex]} src={`${process.env.R2_PUBLIC_URL}/images/${images[currentIndex]}`} alt={name} className="h-full w-full object-cover animate-[fadeIn_0.3s_ease-out]" />
-        
+        <div className="absolute inset-0 overflow-hidden rounded-[1.25rem]">
+          {images.map((img, i) => (
+            <img 
+              key={img} 
+              src={`${process.env.R2_PUBLIC_URL}/images/${img}`} 
+              alt={`${name} ${i + 1}`} 
+              className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${i === currentIndex ? 'opacity-100 z-10 animate-[fadeIn_0.3s_ease-out]' : 'opacity-0 z-0'}`} 
+            />
+          ))}
+        </div>
         {images.length > 1 && (
           <>
             <button 
               onClick={handlePrev}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-100 transition hover:bg-black/80 backdrop-blur md:opacity-0 group-hover:opacity-100"
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-100 transition hover:bg-black/80 backdrop-blur md:opacity-0 group-hover:opacity-100 z-20"
               aria-label="Previous image"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
             <button 
               onClick={handleNext}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-100 transition hover:bg-black/80 backdrop-blur md:opacity-0 group-hover:opacity-100"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-black/40 p-2 text-white opacity-100 transition hover:bg-black/80 backdrop-blur md:opacity-0 group-hover:opacity-100 z-20"
               aria-label="Next image"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
             </button>
 
-            <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2">
+            <div className="absolute -bottom-5 left-0 right-0 flex justify-center gap-2 z-20">
               {images.map((_, i) => (
                 <button 
                   key={i} 
                   onClick={(e) => { e.stopPropagation(); setCurrentIndex(i); }}
-                  className={`h-1.5 w-1.5 rounded-full transition-all ${i === currentIndex ? 'bg-white scale-125' : 'bg-white/40'}`}
+                  className={`h-1.5 w-1.5 rounded-full transition-all ${i === currentIndex ? 'bg-[#d7ff55] scale-125' : 'bg-white/20 hover:bg-white/40'}`}
                   aria-label={`Go to image ${i + 1}`}
                 />
               ))}
@@ -95,13 +103,15 @@ function ProjectCarousel({ images, name }: { images: string[]; name: string }) {
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
           </button>
 
-          <img 
-            src={`${process.env.R2_PUBLIC_URL}/images/${images[currentIndex]}`} 
-            alt={name} 
-            className="max-h-[85vh] w-full object-contain shadow-2xl drop-shadow-2xl" 
-            onClick={(e) => e.stopPropagation()} 
-          />
-
+          {images.map((img, i) => (
+            <img 
+              key={`lightbox-${img}`} 
+              src={`${process.env.R2_PUBLIC_URL}/images/${img}`} 
+              alt={`${name} ${i + 1}`} 
+              className={`absolute max-h-[85vh] w-full object-contain shadow-2xl drop-shadow-2xl transition-opacity duration-300 ${i === currentIndex ? 'opacity-100 z-10 animate-[fadeIn_0.3s_ease-out]' : 'opacity-0 z-0'}`} 
+              onClick={(e) => e.stopPropagation()} 
+            />
+          ))}
           {images.length > 1 && (
             <>
               <button 
@@ -275,7 +285,7 @@ export default function App() {
         <div className="mx-auto max-w-[1344px]">
           <div data-reveal className="reveal mb-14 grid gap-6 lg:grid-cols-[.7fr_1.3fr] lg:items-end">
             <p className="text-xs font-bold tracking-[0.16em] text-[#59604f]">OUR SERVICES</p>
-            <h2 className="max-w-3xl font-display text-5xl leading-[.9] tracking-[-0.06em] sm:text-6xl">{content.services_headline}<br /><em className="font-normal text-[#4e724d]">{content.services_subheadline}</em></h2>
+            <h2 className="max-w-3xl font-display text-5xl leading-[.9] tracking-[-0.06em] sm:text-6xl">{content.services_headline}<br /><em className="font-normal text-3xl sm:text-4xl text-[#4e724d] block mt-2">{content.services_subheadline}</em></h2>
           </div>
           <div className="grid gap-px bg-[#10121a]/15 md:grid-cols-2 xl:grid-cols-4">
             {services.map((service) => <article key={service.index} data-reveal className="reveal group flex min-h-[320px] flex-col bg-[#f6f3eb] p-6 transition duration-500 hover:bg-[#d7ff55] sm:p-8" style={{ transitionDelay: `${Number(service.index) * 80}ms` }}>
@@ -298,11 +308,11 @@ export default function App() {
             onTouchEnd={onTouchEnd}
           >
             {projects[activeProject] && <article data-cms-id={projects[activeProject].id} className="overflow-hidden rounded-[2rem] bg-[#22294b] p-5 sm:p-7">
-              <div className={`relative h-[310px] overflow-hidden rounded-[1.25rem] bg-gradient-to-br ${activeProject % 3 === 0 ? "from-[#f2bf5a] via-[#e99638] to-[#c85c35]" : activeProject % 3 === 1 ? "from-[#b9dfca] via-[#78bca5] to-[#247a73]" : "from-[#aab4fc] via-[#6974dc] to-[#292b74]"} sm:h-[390px]`}>
+              <div className={`relative h-[310px] rounded-[1.25rem] bg-gradient-to-br ${activeProject % 3 === 0 ? "from-[#f2bf5a] via-[#e99638] to-[#c85c35]" : activeProject % 3 === 1 ? "from-[#b9dfca] via-[#78bca5] to-[#247a73]" : "from-[#aab4fc] via-[#6974dc] to-[#292b74]"} sm:h-[390px]`}>
                 {projects[activeProject].images && projects[activeProject].images.length > 0 ? (
                   <ProjectCarousel images={projects[activeProject].images} name={projects[activeProject].name} />
                 ) : (
-                  <ProjectArtwork type={activeProject} />
+                  <div className="h-full w-full overflow-hidden rounded-[1.25rem]"><ProjectArtwork type={activeProject} /></div>
                 )}
                 <span className="absolute bottom-5 left-5 rounded-full bg-white/85 px-3 py-1 text-[10px] font-bold tracking-wider text-[#10121a] backdrop-blur">{projects[activeProject].category.toUpperCase()}</span>
               </div>
@@ -312,9 +322,15 @@ export default function App() {
                 ) : (
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-white/10 text-[9px] text-white">{projects[activeProject].client.slice(0, 2).toUpperCase()}</span>
                 )}
-                {projects[activeProject].client.toUpperCase()}</div><h3 className="max-w-xl font-display text-3xl tracking-[-.045em] sm:text-4xl">{projects[activeProject].name}</h3></div><button onClick={() => setActiveProject((activeProject + 1) % projects.length)} className="group inline-flex h-11 items-center gap-3 self-end rounded-full border border-white/20 px-4 text-xs font-bold tracking-[.12em] transition hover:border-[#d7ff55] hover:text-[#d7ff55]">NEXT CASE <Arrow /></button></div>
+                {projects[activeProject].client.toUpperCase()}</div><h3 className="max-w-xl font-display text-3xl tracking-[-.045em] sm:text-4xl">{projects[activeProject].name}</h3></div><button onClick={() => setActiveProject((activeProject + 1) % projects.length)} className="group hidden sm:inline-flex h-11 items-center gap-3 self-end rounded-full border border-white/20 px-4 text-xs font-bold tracking-[.12em] transition hover:border-[#d7ff55] hover:text-[#d7ff55]">NEXT CASE <Arrow /></button></div>
             </article>}
             {projects[activeProject] && <aside className="flex flex-col justify-between gap-4 rounded-[2rem] bg-[#d7ff55] p-6 text-[#121612] sm:p-8"><div><span className="font-mono text-xs">{String(activeProject + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span><p className="mt-14 max-w-sm whitespace-pre-line text-xl leading-snug tracking-[-.03em]">{projects[activeProject].description}</p></div><div className="flex gap-2">{projects.map((project, index) => <button key={project.id} data-cms-id={project.id} onClick={() => setActiveProject(index)} aria-label={`View ${project.client} case study`} className={`h-2 flex-1 rounded-full transition ${activeProject === index ? "bg-[#121612]" : "bg-[#121612]/20 hover:bg-[#121612]/50"}`} />)}</div><p className="text-xs font-bold tracking-[.12em]">SWIPE THROUGH OUR IMPACT →</p></aside>}
+          </div>
+          
+          <div className="hidden" aria-hidden="true">
+            {projects.map(p => p.images && p.images[0] && (
+              <img key={`preload-${p.id}`} src={`${process.env.R2_PUBLIC_URL}/images/${p.images[0]}`} alt="" />
+            ))}
           </div>
         </div>
       </section>
