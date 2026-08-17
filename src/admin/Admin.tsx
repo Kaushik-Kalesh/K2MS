@@ -4,7 +4,7 @@ type PortfolioProject = {
   id: string;
   category: string;
   client: string;
-  description: string;
+  description: { challenge: string; solution: string; impact: string; } | string;
   images: string[];
   logo: string;
   name: string;
@@ -205,13 +205,30 @@ export default function Admin() {
                   
                   <div className="mt-2">
                     <label className="block text-[10px] font-bold tracking-[.14em] text-white/55 uppercase mb-2">DESCRIPTION</label>
-                    <textarea 
-                      value={proj.description || ''}
-                      onChange={e => updatePortfolio(i, 'description', e.target.value)}
-                      placeholder="Project description"
-                      rows={4}
-                      className="w-full resize-none border-b border-white/25 bg-transparent py-3 text-base outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]"
-                    />
+                    {typeof proj.description === 'object' ? (
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-[10px] font-bold text-white/40 uppercase mb-1">The Challenge</label>
+                          <textarea value={proj.description.challenge || ''} onChange={e => updatePortfolio(i, 'description', { ...proj.description, challenge: e.target.value } as any)} rows={2} className="w-full resize-none border-b border-white/25 bg-transparent py-2 text-sm outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-white/40 uppercase mb-1">Our Solution</label>
+                          <textarea value={proj.description.solution || ''} onChange={e => updatePortfolio(i, 'description', { ...proj.description, solution: e.target.value } as any)} rows={2} className="w-full resize-none border-b border-white/25 bg-transparent py-2 text-sm outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]" />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-bold text-white/40 uppercase mb-1">The Impact</label>
+                          <textarea value={proj.description.impact || ''} onChange={e => updatePortfolio(i, 'description', { ...proj.description, impact: e.target.value } as any)} rows={2} className="w-full resize-none border-b border-white/25 bg-transparent py-2 text-sm outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]" />
+                        </div>
+                      </div>
+                    ) : (
+                      <textarea 
+                        value={proj.description || ''}
+                        onChange={e => updatePortfolio(i, 'description', e.target.value)}
+                        placeholder="Project description"
+                        rows={4}
+                        className="w-full resize-none border-b border-white/25 bg-transparent py-3 text-base outline-none transition placeholder:text-white/25 focus:border-[#d7ff55]"
+                      />
+                    )}
                   </div>
                   
                   <div className="mt-4 border-t border-white/10 pt-4">
