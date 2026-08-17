@@ -283,8 +283,7 @@ export default function App() {
 
       <section id="services" className="relative bg-[#f6f3eb] px-5 py-20 text-[#10121a] sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1344px]">
-          <div data-reveal className="reveal mb-14 grid gap-6 lg:grid-cols-[.7fr_1.3fr] lg:items-end">
-            <p className="text-xs font-bold tracking-[0.16em] text-[#59604f]">OUR SERVICES</p>
+          <div data-reveal className="reveal mb-14">
             <h2 className="max-w-3xl font-display text-5xl leading-[.9] tracking-[-0.06em] sm:text-6xl">{content.services_headline}<br /><em className="font-normal text-3xl sm:text-4xl text-[#4e724d] block mt-2">{content.services_subheadline}</em></h2>
           </div>
           <div className="grid gap-px bg-[#10121a]/15 md:grid-cols-2 xl:grid-cols-4">
@@ -299,15 +298,20 @@ export default function App() {
 
       <section id="work" className="bg-[#171d37] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
         <div className="mx-auto max-w-[1344px]">
-          <div data-reveal className="reveal mb-10 flex flex-wrap items-end justify-between gap-5"><div><p className="text-xs font-bold tracking-[0.16em] text-[#d7ff55]">PORTFOLIO</p><h2 className="mt-4 font-display text-5xl leading-none tracking-[-0.06em] sm:text-6xl">{content.portfolio_headline}</h2></div><p className="max-w-xs text-sm leading-relaxed text-white/60">{content.portfolio_subheadline}</p></div>
+          <div data-reveal className="reveal mb-10 lg:mb-4 flex flex-wrap items-end justify-between gap-5"><div><h2 className="font-display text-5xl leading-none tracking-[-0.06em] sm:text-6xl">{content.portfolio_headline}</h2></div><p className="max-w-xs text-sm leading-relaxed text-white/60">{content.portfolio_subheadline}</p></div>
           <div 
             data-reveal 
-            className="reveal project-scroller grid items-start gap-4 lg:grid-cols-[1.55fr_.85fr]"
+            className="reveal project-scroller relative grid items-start overflow-hidden rounded-[2rem] bg-[#22294b] lg:overflow-visible lg:rounded-none lg:bg-transparent lg:gap-4 lg:grid-cols-[1.55fr_.85fr]"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
-            {projects[activeProject] && <article data-cms-id={projects[activeProject].id} className="overflow-hidden rounded-[2rem] bg-[#22294b] p-5 sm:p-7">
+            <svg className="absolute hidden lg:block text-[#b8860b] -top-12 left-[52%] w-56 h-48 z-20 pointer-events-none" viewBox="0 0 160 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 90 C 60 80, 70 20, 50 20 C 30 20, 30 70, 70 70 Q 120 70, 140 120" stroke="currentColor" strokeWidth="2.5" strokeDasharray="5 5" fill="none" strokeLinecap="round" />
+              <path d="M125 110 L140 120 L145 105" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+            </svg>
+
+            {projects[activeProject] && <article data-cms-id={projects[activeProject].id} className="p-5 pb-0 sm:p-7 sm:pb-0 lg:overflow-hidden lg:rounded-[2rem] lg:bg-[#22294b] lg:p-7">
               <div className={`relative h-[310px] rounded-[1.25rem] bg-gradient-to-br ${activeProject % 3 === 0 ? "from-[#f2bf5a] via-[#e99638] to-[#c85c35]" : activeProject % 3 === 1 ? "from-[#b9dfca] via-[#78bca5] to-[#247a73]" : "from-[#aab4fc] via-[#6974dc] to-[#292b74]"} sm:h-[390px]`}>
                 {projects[activeProject].images && projects[activeProject].images.length > 0 ? (
                   <ProjectCarousel images={projects[activeProject].images} name={projects[activeProject].name} />
@@ -322,9 +326,9 @@ export default function App() {
                 ) : (
                   <span className="grid h-7 w-7 place-items-center rounded-full bg-white/10 text-[9px] text-white">{projects[activeProject].client.slice(0, 2).toUpperCase()}</span>
                 )}
-                {projects[activeProject].client.toUpperCase()}</div><h3 className="max-w-xl font-display text-3xl tracking-[-.045em] sm:text-4xl">{projects[activeProject].name}</h3></div><button onClick={() => setActiveProject((activeProject + 1) % projects.length)} className="group hidden sm:inline-flex h-11 items-center gap-3 self-end rounded-full border border-white/20 px-4 text-xs font-bold tracking-[.12em] transition hover:border-[#d7ff55] hover:text-[#d7ff55]">NEXT CASE <Arrow /></button></div>
+                {projects[activeProject].client.toUpperCase()}</div><h3 className="max-w-xl font-display text-3xl tracking-[-.045em] sm:text-4xl">{projects[activeProject].name}</h3></div></div>
             </article>}
-            {projects[activeProject] && <aside className="flex flex-col justify-between gap-4 rounded-[2rem] bg-[#d7ff55] p-6 text-[#121612] sm:p-8"><div><span className="font-mono text-xs">{String(activeProject + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span><p className="mt-14 max-w-sm whitespace-pre-line text-xl leading-snug tracking-[-.03em]">{projects[activeProject].description}</p></div><div className="flex gap-2">{projects.map((project, index) => <button key={project.id} data-cms-id={project.id} onClick={() => setActiveProject(index)} aria-label={`View ${project.client} case study`} className={`h-2 flex-1 rounded-full transition ${activeProject === index ? "bg-[#121612]" : "bg-[#121612]/20 hover:bg-[#121612]/50"}`} />)}</div><p className="text-xs font-bold tracking-[.12em]">SWIPE THROUGH OUR IMPACT →</p></aside>}
+            {projects[activeProject] && <aside className="flex flex-col justify-between gap-4 p-5 pt-0 text-white sm:p-7 sm:pt-0 lg:rounded-[2rem] lg:bg-[#d7ff55] lg:p-8 lg:text-[#121612]"><div><span className="hidden lg:inline-block font-mono text-xs opacity-60 lg:opacity-100">{String(activeProject + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}</span><p className="mt-0 lg:mt-14 max-w-sm whitespace-pre-line text-xl leading-snug tracking-[-.03em]">{projects[activeProject].description}</p></div><div><div className="flex gap-2">{projects.map((project, index) => <button key={project.id} data-cms-id={project.id} onClick={() => setActiveProject(index)} aria-label={`View ${project.client} case study`} className={`h-2 flex-1 rounded-full transition ${activeProject === index ? "bg-[#d7ff55] lg:bg-[#121612]" : "bg-white/20 hover:bg-white/40 lg:bg-[#121612]/20 lg:hover:bg-[#121612]/50"}`} />)}</div><div className="mt-6 flex items-center justify-between"><p className="text-xs font-bold tracking-[.12em] sm:hidden">SWIPE THROUGH OUR IMPACT →</p><button onClick={() => setActiveProject((activeProject + 1) % projects.length)} className="group hidden sm:inline-flex h-11 items-center gap-3 rounded-full border border-white/20 px-4 text-xs font-bold tracking-[.12em] transition hover:border-[#d7ff55] hover:text-[#d7ff55] lg:border-[#121612]/20 lg:hover:border-[#121612] lg:hover:text-[#121612]">NEXT CASE <Arrow /></button></div></div></aside>}
           </div>
           
           <div className="hidden" aria-hidden="true">
