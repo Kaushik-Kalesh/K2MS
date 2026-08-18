@@ -250,7 +250,7 @@ export default function App() {
         <div className="relative mx-auto flex w-full max-w-[1344px] flex-1 flex-col justify-end">
           <div className="mb-4 lg:mb-5 flex items-center gap-3 text-[10px] font-bold tracking-[0.22em] text-[#d7ff55] sm:text-xs"><span className="h-px w-9 bg-[#d7ff55]" />STRATEGY · DESIGN · TECHNOLOGY</div>
           <div className="grid items-end gap-2 lg:grid-cols-[1fr_300px] lg:gap-8">
-            <h1 className="max-w-[1400px] font-display text-[clamp(3.5rem,8.5vw,8.5rem)] font-semibold leading-[0.88] tracking-[-0.08em]">
+            <h1 className="max-w-[1400px] font-geom text-[clamp(3.5rem,8.5vw,8.5rem)] font-semibold leading-[0.88] tracking-[-0.05em]">
               <span className="hidden sm:block">
                 <StrokeText
                   text={heroTextDesktop}
@@ -259,6 +259,7 @@ export default function App() {
                   strokeWidth={1.4}
                   trigger="mount"
                   fillMode="wipe"
+                  fontFamily="'Geom', sans-serif"
                 />
               </span>
               <span className="block sm:hidden">
@@ -269,6 +270,7 @@ export default function App() {
                   strokeWidth={1.4}
                   trigger="mount"
                   fillMode="wipe"
+                  fontFamily="'Geom', sans-serif"
                 />
               </span>
             </h1>

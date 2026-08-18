@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Geom:ital,wght@0,300..900;1,300..900&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap');
 @import 'tailwindcss';
 
 :root { font-family: 'Manrope', sans-serif; color: #10121a; background: #0c0e16; }
 .font-display { font-family: 'Playfair Display', Georgia, serif; }
+.font-geom { font-family: 'Geom', sans-serif; }
 .font-mono { font-family: 'DM Mono', monospace; }
 html { scroll-behavior: smooth; }
 body { margin: 0; }

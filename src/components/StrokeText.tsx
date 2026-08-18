@@ -17,6 +17,7 @@ interface StrokeTextProps {
   ease?: string;
   trigger?: 'mount' | 'hover' | 'scroll' | 'loop';
   fillMode?: 'none' | 'wipe' | 'fade';
+  fontFamily?: string;
   fontSize?: number;
   fontWeight?: number;
   letterSpacing?: number;
@@ -37,6 +38,7 @@ export default function StrokeText({
   ease = 'power2.out',
   trigger = 'mount',
   fillMode = 'wipe',
+  fontFamily,
   fontSize,
   fontWeight,
   letterSpacing,
@@ -60,6 +62,7 @@ export default function StrokeText({
   const dash = fontSize ? Math.max(fontSize * 7, 200) : 2000;
 
   const fontStyle = {
+    ...(fontFamily !== undefined && { fontFamily }),
     ...(fontSize !== undefined && { fontSize: `${fontSize}px` }),
     ...(fontWeight !== undefined && { fontWeight }),
     ...(letterSpacing !== undefined && { letterSpacing: `${letterSpacing}px` })
@@ -122,7 +125,7 @@ export default function StrokeText({
     return () => {
       cancelled = true;
     };
-  }, [textString, fontSize, fontWeight, letterSpacing, strokeWidth]);
+  }, [textString, fontFamily, fontSize, fontWeight, letterSpacing, strokeWidth]);
 
   useEffect(() => {
     const root = rootRef.current;
